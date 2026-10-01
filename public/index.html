@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vibe Coding Idea Roulette — Developer Project Selector</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="bg-glow" aria-hidden="true"></div>
+
+  <!-- Top Telemetry Header -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <span class="brand-dot"></span>
+      </div>
+      <div class="brand-text">
+        <h1>Vibe Coding Idea Roulette</h1>
+        <span class="brand-subtitle">PRECISION PROJECT SELECTOR // PERSISTENT JSON ENGINE</span>
+      </div>
+    </div>
+
+    <div class="topbar-stats">
+      <div class="stat-pill">
+        <span class="stat-label">AVAILABLE</span>
+        <span class="stat-value" id="statAvailableCount">0</span>
+      </div>
+      <div class="stat-pill stat-pill-completed">
+        <span class="stat-label">COMPLETED</span>
+        <span class="stat-value" id="statCompletedCount">0</span>
+      </div>
+      <button type="button" class="btn btn-ghost btn-icon" id="soundToggleBtn" title="Toggle mechanical click audio" aria-label="Toggle mechanical sound">
+        <span id="soundToggleIcon">🔊</span>
+        <span class="btn-label-sm" id="soundToggleLabel">SFX ON</span>
+      </button>
+      <button type="button" class="btn btn-primary" id="openAddModalBtn">
+        <span>+ New Idea</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="workspace">
+    <!-- Left / Center Stage: Precision Idea Rotor -->
+    <section class="roulette-stage" aria-label="Idea Roulette Stage">
+      <div class="stage-hud-top">
+        <div class="hud-readout">
+          <span class="hud-tag">ROTOR STATUS</span>
+          <span class="hud-value" id="rotorStatusText">READY_TO_SPIN</span>
+        </div>
+        <div class="hud-readout hud-readout-right">
+          <span class="hud-tag">CURRENT TARGET</span>
+          <span class="hud-value hud-value-accent" id="livePointerReadout">—</span>
+        </div>
+      </div>
+
+      <div class="wheel-shell" id="wheelShell">
+        <!-- Precision top pointer indicator -->
+        <div class="pointer-assembly" id="pointerAssembly" aria-hidden="true">
+          <div class="pointer-housing">
+            <span class="pointer-label">TARGET LOCK</span>
+            <svg class="pointer-needle" viewBox="0 0 36 42" fill="none">
+              <path d="M18 40L3 6H33L18 40Z" fill="currentColor" />
+              <circle cx="18" cy="12" r="3.5" fill="#090b10" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Canvas Rotor -->
+        <div class="canvas-wrapper" id="canvasWrapper">
+          <canvas id="rouletteCanvas" width="640" height="640"></canvas>
+
+          <!-- Center Spin Trigger Hub -->
+          <button type="button" class="spin-hub-btn" id="centerSpinBtn" aria-label="Spin the idea roulette">
+            <span class="spin-hub-ring"></span>
+            <span class="spin-hub-text" id="spinBtnLabel">SPIN</span>
+            <span class="spin-hub-sub" id="spinBtnSub">SPACE</span>
+          </button>
+        </div>
+
+        <!-- Empty / Only-Completed State Overlay on Wheel -->
+        <div class="wheel-empty-overlay hidden" id="wheelEmptyOverlay">
+          <div class="wheel-empty-card">
+            <div class="empty-badge" id="wheelEmptyBadge">POOL DEPLETED</div>
+            <h2 id="wheelEmptyTitle">No Available Ideas in Rotor</h2>
+            <p id="wheelEmptyDesc">Add a new project idea or restore completed ideas back to the active pool.</p>
+            <div class="wheel-empty-actions">
+              <button type="button" class="btn btn-primary" id="emptyAddIdeaBtn">+ Add Idea</button>
+              <button type="button" class="btn btn-secondary hidden" id="emptyRestoreAllBtn">↺ Restore Completed Ideas</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Primary Controls -->
+      <div class="stage-controls">
+        <button type="button" class="btn btn-spin-main" id="mainSpinBtn">
+          <span class="spin-icon">◎</span>
+          <span>SPIN ROULETTE</span>
+          <kbd class="kbd-hint">SPACE</kbd>
+        </button>
+      </div>
+    </section>
+
+    <!-- Right Panel: Idea Collection & Management -->
+    <aside class="collection-panel" aria-label="Idea Collection Management">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Idea Collection</h2>
+          <p class="panel-subtitle">Synced with <code>/data/ideas.json</code></p>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" id="quickAddToggleBtn">+ Add</button>
+      </div>
+
+      <!-- Inline Add Idea Form -->
+      <form class="add-idea-form" id="addIdeaForm">
+        <div class="input-row">
+          <input
+            type="text"
+            id="newIdeaTitleInput"
+            class="input-field"
+            placeholder="e.g., Build a WebAssembly raytracer..."
+            maxlength="120"
+            required
+            autocomplete="off"
+          />
+          <button type="submit" class="btn btn-primary">Add</button>
+        </div>
+        <div class="form-meta-row">
+          <div class="meta-field">
+            <label for="newIdeaCategoryInput">Category</label>
+            <input
+              type="text"
+              id="newIdeaCategoryInput"
+              class="input-field input-sm"
+              placeholder="DevTools, AI, Game Dev..."
+              maxlength="32"
+            />
+          </div>
+          <div class="meta-field">
+            <label for="newIdeaDifficultySelect">Difficulty</label>
+            <select id="newIdeaDifficultySelect" class="select-field input-sm">
+              <option value="Easy">Easy</option>
+              <option value="Medium" selected>Medium</option>
+              <option value="Hard">Hard</option>
+            </select>
+          </div>
+        </div>
+      </form>
+
+      <!-- Search Filter -->
+      <div class="filter-bar">
+        <input
+          type="search"
+          id="searchIdeasInput"
+          class="input-field input-search"
+          placeholder="Filter ideas by title or category..."
+          autocomplete="off"
+        />
+      </div>
+
+      <!-- Lists Container -->
+      <div class="lists-scroll-container">
+        <!-- Available Ideas Section -->
+        <section class="idea-section" aria-labelledby="availableHeading">
+          <div class="section-header">
+            <div class="section-title-group">
+              <span class="status-dot status-dot-available"></span>
+              <h3 id="availableHeading">AVAILABLE IDEAS</h3>
+            </div>
+            <span class="section-count" id="availableSectionBadge">0</span>
+          </div>
+          <ul class="idea-list" id="availableIdeasList"></ul>
+        </section>
+
+        <!-- Completed / Selected Ideas Section -->
+        <section class="idea-section idea-section-completed" aria-labelledby="completedHeading">
+          <div class="section-header">
+            <div class="section-title-group">
+              <span class="status-dot status-dot-completed"></span>
+              <h3 id="completedHeading">COMPLETED IDEAS</h3>
+            </div>
+            <div class="section-actions">
+              <button type="button" class="btn-link hidden" id="restoreAllCompletedBtn" title="Move all completed ideas back to available">
+                ↺ Restore All
+              </button>
+              <span class="section-count section-count-green" id="completedSectionBadge">0</span>
+            </div>
+          </div>
+          <ul class="idea-list" id="completedIdeasList"></ul>
+        </section>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Central Result Modal (Selected Idea Reveal) -->
+  <div class="modal-backdrop hidden" id="resultModalBackdrop" role="dialog" aria-modal="true" aria-labelledby="resultIdeaTitle">
+    <div class="result-modal" id="resultModalCard">
+      <button type="button" class="modal-close-btn" id="closeResultModalBtn" aria-label="Close result">×</button>
+
+      <div class="result-header-badge">
+        <span class="pulse-dot"></span>
+        <span>SELECTED PROJECT IDEA</span>
+      </div>
+
+      <div class="result-meta-tags" id="resultMetaTags"></div>
+
+      <blockquote class="result-idea-title" id="resultIdeaTitle">
+        Build a procedural dungeon generator
+      </blockquote>
+
+      <p class="result-helper-text">
+        Accepting this idea locks it into your <strong>Completed / Selected</strong> list in green and removes it from future spins.
+      </p>
+
+      <div class="result-actions">
+        <button type="button" class="btn btn-accept" id="acceptIdeaBtn">
+          <span class="check-icon">✓</span>
+          <span>Accept Idea &amp; Start Coding</span>
+        </button>
+        <button type="button" class="btn btn-secondary" id="spinAgainModalBtn">
+          <span>↻ Spin Again</span>
+        </button>
+        <button type="button" class="btn btn-ghost" id="dismissResultBtn">
+          <span>Close</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Idea Modal -->
+  <div class="modal-backdrop hidden" id="editModalBackdrop" role="dialog" aria-modal="true" aria-labelledby="editModalHeading">
+    <div class="edit-modal">
+      <div class="edit-modal-header">
+        <h3 id="editModalHeading">Edit Coding Idea</h3>
+        <button type="button" class="modal-close-btn" id="closeEditModalBtn" aria-label="Close edit dialog">×</button>
+      </div>
+      <form id="editIdeaForm">
+        <input type="hidden" id="editIdeaIdInput" />
+        <div class="form-group">
+          <label for="editIdeaTitleInput">Idea Title</label>
+          <input type="text" id="editIdeaTitleInput" class="input-field" required maxlength="120" />
+        </div>
+        <div class="form-meta-row">
+          <div class="meta-field">
+            <label for="editIdeaCategoryInput">Category</label>
+            <input type="text" id="editIdeaCategoryInput" class="input-field input-sm" maxlength="32" />
+          </div>
+          <div class="meta-field">
+            <label for="editIdeaDifficultySelect">Difficulty</label>
+            <select id="editIdeaDifficultySelect" class="select-field input-sm">
+              <option value="Easy">Easy</option>
+              <option value="Medium">Medium</option>
+              <option value="Hard">Hard</option>
+            </select>
+          </div>
+        </div>
+        <div class="edit-modal-actions">
+          <button type="button" class="btn btn-ghost" id="cancelEditBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+{
+  "ideas": [
+    {
+      "id": 1,
+      "title": "Build a procedural dungeon generator",
+      "category": "Game Dev",
+      "difficulty": "Medium",
+      "status": "available",
+      "createdAt": "2026-10-01T09:00:00.000Z"
+    },
+    {
+      "id": 2,
+      "title": "AI-powered terminal task manager",
+      "category": "CLI / AI",
+      "difficulty": "Medium",
+      "status": "available",
+      "createdAt": "2026-10-01T09:05:00.000Z"
+    },
+    {
+      "id": 3,
+      "title": "Procedural WebGL terrain generator",
+      "category": "Graphics",
+      "difficulty": "Hard",
+      "status": "available",
+      "createdAt": "2026-10-01T09:10:00.000Z"
+    },
+    {
+      "id": 4,
+      "title": "Local-first personal finance dashboard",
+      "category": "Web App",
+      "difficulty": "Medium",
+      "status": "available",
+      "createdAt": "2026-10-01T09:15:00.000Z"
+    },
+    {
+      "id": 5,
+      "title": "Real-time multiplayer WebSocket drawing game",
+      "category": "Multiplayer",
+      "difficulty": "Medium",
+      "status": "available",
+      "createdAt": "2026-10-01T09:20:00.000Z"
+    },
+    {
+      "id": 6,
+      "title": "Web Audio modular synth patcher",
+      "category": "Audio",
+      "difficulty": "Hard",
+      "status": "available",
+      "createdAt": "2026-10-01T09:25:00.000Z"
+    },
+    {
+      "id": 7,
+      "title": "Git commit graph visual explorer",
+      "category": "DevTools",
+      "difficulty": "Medium",
+      "status": "available",
+      "createdAt": "2026-10-01T09:30:00.000Z"
+    },
+    {
+      "id": 8,
+      "title": "Pomodoro timer with generative ambient lo-fi beats",
+      "category": "Productivity",
+      "difficulty": "Easy",
+      "status": "available",
+      "createdAt": "2026-10-01T09:35:00.000Z"
+    },
+    {
+      "id": 9,
+      "title": "Build a distraction-free markdown editor",
+      "category": "Productivity",
+      "difficulty": "Easy",
+      "status": "completed",
+      "createdAt": "2026-09-28T14:00:00.000Z",
+      "completedAt": "2026-09-29T18:30:00.000Z"
+    },
+    {
+      "id": 10,
+      "title": "Create a sprite & pixel-art generator",
+      "category": "Creative Tools",
+      "difficulty": "Medium",
+      "status": "completed",
+      "createdAt": "2026-09-25T11:00:00.000Z",
+      "completedAt": "2026-09-27T16:15:00.000Z"
+    }
+  ]
+}
